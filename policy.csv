@@ -1,0 +1,13 @@
+p, ROLE_MASTER, .*, .*, allow
+p, ROLE_ADMIN_ORGANIZATION_1, organization1:.*:.*:.*, .*, allow
+p, ROLE_ADMIN_WORKSPACE_1, organization1:workspace1:.*:.*, .*, allow
+p, ROLE_DEV, organization1:workspace1:.*:.*, GET, allow
+p, ROLE_INTERNSHIP, organization1:workspace1:.*:.*, POST, allow
+p, learner, organization1:workspace1:learner:test1, .*, allow
+p, cto, organization1:workspace1:a:cd, .*, allow
+p, learner, organization1:workspace1:a:la, .*, allow
+
+g, supreme, ROLE_ADMIN_ORGANIZATION_1
+g, cto, ROLE_ADMIN_WORKSPACE_1
+g, employee, ROLE_DEV
+g, learner, ROLE_INTERNSHIP

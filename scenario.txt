@@ -1,0 +1,7 @@
+Hierarchical
+organization1 => workspace1 => redis_service => redis keys 
+Kich bản: 
+User admin_org1 là admin tổ chức organization1 => được đọc và ghi tất cả resources bao gồm các key trong redis 
+User admin_workspace1 được gắn quyền sử dụng toàn quyền workspace1 => tạo permissions được đọc ghi tất cả các resources trong workspace1 
+User dev là dev, được gắn quyền được đọc tất key trong redis => tạo permissions với all resources có attr service redis 
+User internship, được ghi và đọc các value đã ghi trong redis => tạo permission với resource mà anh ấy tạo

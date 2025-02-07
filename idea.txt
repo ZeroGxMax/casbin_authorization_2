@@ -1,0 +1,13 @@
+1. Login:
+- 4 user with 4 different roles:
++ admin_org1
++ admin_workspace1
++ dev
++ internship
+
+2. System enable redis:
++ Add key/value
++ Retrieve key/value based on their role
+
+2. Add those role in policy.
+
