@@ -17,6 +17,25 @@ from typing import Optional
 from itertools import filterfalse
 from pydantic import BaseModel, Field
 
+import json
+from fastapi import Request
+
+async def extract_request_body(req: Request) -> str:
+    """
+    Extracts the JSON body from a FastAPI request and serializes it as a string.
+    
+    Args:
+        req (Request): The FastAPI request object.
+    
+    Returns:
+        str: The JSON body as a serialized string, or an empty string if extraction fails.
+    """
+    try:
+        req_body = await req.json()
+        return json.dumps(req_body)
+    except Exception:
+        return ""
+
 
 class User(BaseModel):
     """
@@ -141,3 +160,61 @@ class UsersDAO:
         """
         user = self.get_user(token)
         return user
+
+class DeleteJobRequest(BaseModel):
+    workspaceId: str
+    jobId: str
+    
+class CreateJobRequest(BaseModel):
+    name: str
+    workspaceId: str
+    isPrivate: bool
+    
+class CreateTaskRequest(BaseModel):
+    jobId: str
+    taskType: int
+    name: str
+
+class CreateCatalogRequest(BaseModel):
+    name: str
+    workspaceId: str
+    bucket: str
+    isPrivate: bool
+    
+class CreateSchemaRequest(BaseModel):
+    bucket: str
+    workspaceId: str
+    catalogId: str
+    name: str
+    isPrivate: bool
+    
+class CreateTableRequest(BaseModel):
+    columns: str
+    workspaceId: str
+    catalogId: str
+    schemaId: str
+    name: str
+    isPrivate: bool
+    
+class LoadDataRequest(BaseModel):
+    data: str
+    workspaceId: str
+    catalogId: str
+    schemaId: str
+    tableId: str
+    
+class CreateBucketRequest(BaseModel):
+    name: str
+    organizationId: str
+    isPrivate: bool
+    
+class UploadFileRequest(BaseModel):
+    name: str
+    organizationId: str
+    folder: str
+    isPrivate: bool
+    
+class FileDownloadRequest(BaseModel):
+    organizationId: str
+    folder: str
+    fileId: str

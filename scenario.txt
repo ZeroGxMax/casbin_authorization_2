@@ -9,3 +9,74 @@ User internship, được ghi và đọc các value đã ghi trong redis => tạ
 
 user chỉ có quyền trên bảng có prefix "workspace1"
 workflow, catalog, schema, tables, notebooks
+
+Các tài nguyên:
+/job, /catalog, /workspace, /job, /job-statistic, /datasource, /connection, /sql
+/notebook, /experiment, /feature, /model, /sql-store, /spark-compute,/notebookCompute, /hard-disk
+
+Kịch bản IDMA:
+1. Ai tạo cái gì thì có toàn bộ quyền trên cái đó
+2. DEV có quyền trên
+
+/catalog/detail/abc
+
+/catalog/detail/** deny
+
+
+Scenario 2:
+- Nhân viên A tạo Workspace workspace public:
++, Nhân viên A có thể truy cập toàn bộ tài nguyên trong Workspace
++, Mọi người đều có thể truy cập các tài nguyên public trong Workspace
+
+- Nhân viên B tạo Catalog catalog_1 private:
++, Nhân viên B có quyền truy cập toàn bộ tài nguyên bên dưới catalog_1, bao gồm schemas, tables và partitions
++, Chỉ collaborator được nhân viên B add, hoặc workspace creator (nhân viên A) add mới có quyền
+truy cập vào catalog_1. Quyền hạn có thể gồm GET hoặc POST. 
++, Tất cả user khác không có quyền truy cập vào catalog_1 (trừ workspace creator)
+
+
+- Nhân viên C (được add vào workspace_1.catalog_1, quyền "read", "create") tạo Schema schema_1 public:
++, Nhân viên C có quyền truy cập toàn bộ tài nguyên bên dưới schema_1, bao gồm tables và partitions
++, catalog_1 collaborator/owner, workspace_1 owner có quyền truy cập workspace_1.catalog_1.schema_1
++, Các user không có quyền truy cập workspace_1.catalog_1.schema_1
+
+- Nhân viên D (được add vào workspace_1.catalog_1, quyền "read", "create") tạo Table table_1 private:
++, Toàn quyền: table_1 owner, schema_1 owner, catalog_1 owner, workspace_1 owner
++, Thừa kế quyền: catalog_1 collaborator
+
+
+Phức tạp quá!.
+
+Owner: Có toàn bộ quyền với mọi tài nguyên bên dưới nó
+Reader: Chỉ có quyền read
+Writer: Có quyền create, read
+
+p, 30, workspace_owner, workspace_1(\..*)?$, .*, allow
+p, 40, employee_b, workspace_1.catalog_1(\..*)?$, .*, allow
+p, 41, employee_c, workspace_1.catalog_1(\..*)?$, (read)|(create), allow
+p, 140, .*, workspace_1.catalog_1(\..*)?$, .*, deny
+p, 50, employee_c, workspace_1.catalog_1.schema_1(\..*)?$, .*, allow
+
+[request_definition]
+r = sub, obj, act
+
+[policy_definition]
+p = priority, sub, obj, act, eft
+
+[role_definition]
+g = _, _
+
+[policy_effect]
+e = priority(p.eft) || deny
+
+[matchers]
+m = (g(r.sub, p.sub) || regexMatch(r.sub, p.sub)) \
+    && (r.obj == p.obj || regexMatch(r.obj, p.obj)) \
+    && regexMatch(r.act, p.act)
+
+
+p, 30, workspace_owner, workspace_1(\..*)?$, .*, allow
+p, 40, employee_b, workspace_1.catalog_1(\..*)?$, .*, allow
+p, 50, employee_c, workspace_1.catalog_1.schema_1(\..*)?$, .*, allow
+p, 51, .*, workspace_1.catalog_1.schema_1(\..*)?$, read, allow
+p, 150, *, workspace_1.catalog_1.schema_1(\..*)?$, .*, deny

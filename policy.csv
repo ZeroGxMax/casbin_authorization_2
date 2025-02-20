@@ -1,13 +1,16 @@
-p, ROLE_MASTER, .*, .*, allow
-p, ROLE_ADMIN_ORGANIZATION_1, organization1:.*:.*:.*, .*, allow
-p, ROLE_ADMIN_WORKSPACE_1, organization1:workspace1:.*:.*, .*, allow
-p, ROLE_DEV, organization1:workspace1:.*:.*, GET, allow
-p, ROLE_INTERNSHIP, organization1:workspace1:.*:.*, POST, allow
-p, learner, organization1:workspace1:learner:test1, .*, allow
-p, cto, organization1:workspace1:a:cd, .*, allow
-p, learner, organization1:workspace1:a:la, .*, allow
+p, 10, root, .*, .*, .*, allow
 
-g, supreme, ROLE_ADMIN_ORGANIZATION_1
-g, cto, ROLE_ADMIN_WORKSPACE_1
-g, employee, ROLE_DEV
-g, learner, ROLE_INTERNSHIP
+p, 30, workspace_owner_1, default(\..*)?$, .*, .*, allow
+p, 30, dev, dev_workspace(\..*)?$, .*, .*, allow
+p, 31, employee_a, dev_workspace(\..*)?$, POST, .*, allow
+p, 32, dev_read, dev_workspace(\..*)?$, GET, .*, allow
+p, 40, cto, default.catalog_1(\..*)?$, .*, .*, allow
+p, 42, learner, default.catalog_1(\..*)?$, GET, .*, allow
+p, 50, cto, default.catalog_1.schema_1(\..*)?$, .*, .*, allow
+p, 60, cto, default.catalog_1.schema_1.table_1(\..*)?$, .*, .*, allow
+p, 61, learner, default.catalog_1.schema_1.table_1(\..*)?$, .*, .*, allow
+p, 140, .*, default.catalog_1(\..*)?$, .*, .*, deny
+p, 150, .*, default.catalog_1.schema_1(\..*)?$, .*, .*, deny
+p, 160, .*, default.catalog_1.schema_1.table_1(\..*)?$, .*, .*, deny
+p, 1000, .*, .*, .*, .*, allow
+g, dev_read, employee_a
